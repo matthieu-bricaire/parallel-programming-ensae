@@ -17,8 +17,11 @@ from distutils.extension import Extension
 from Cython.Build import cythonize
 
 extensions = [
-    Extension("sigmulib", ["interface.pyx"],
+    Extension("sigmulib",
+              sources=["interface.pyx", "sigmul.cpp"],
               include_dirs=["/usr/include/c++/11/"],
+              extra_compile_args=["-fopenmp"],
+              extra_link_args=["-fopenmp"],
               language="c++")
 ]
 
