@@ -1,46 +1,47 @@
 import time
 import torch
-import torch.functional as F
-from sigmulib import compute_sigmul
+import torch.nn.functional as F
+from sigmulib import compute_sigmul_cpp, compute_sigmul_cython
+import numpy as np
 
 torch.manual_seed(29)
 
 
-def sigmul_from_tensor(A):
+def sigmul_from_tensor_cpp(A):
     Al = A.tolist()
-    B = compute_sigmul(Al)
+    B = compute_sigmul_cpp(Al)
     return torch.tensor(B)
 
 
 def sigmul_torch(A):
     sigm = F.sigmoid(A)
-    return sigm * A
+    res = A * sigm
+    return res
 
 
 def compute_time(A, sigmul_fun, n_rep):
-    start = time.now()
-    for _ in n_rep:
+    start = time.time()
+    for _ in range(n_rep):
         B = sigmul_fun(A)
-    return (time.now() - start)/n_rep
+    return (time.time() - start) / n_rep
 
 
-def compare_times(A, n_rep=50):
-    times = {}
+def compare_times(A, n_rep=50, include_cpp=True):
+    times = {}    
 
-    #With sigmul from list
-    Al = A.tolist()
-    times['list'] = compute_time(Al, compute_sigmul, n_rep)
+    if include_cpp:
+        # C++ based version
+        Al = A.tolist()
+        times['sigmul_cpp'] = compute_time(Al, compute_sigmul_cpp, n_rep)
 
-    #With sigmul from tensor
-    times['tensor_1'] = compute_time(A, compute_sigmul, n_rep)
+    # Full cython version
+    An = np.asarray(A, dtype=np.float32)
+    times['sigmul_cython'] = compute_time(An, compute_sigmul_cython, n_rep)
 
-    #With sigmul from tensor - convert to list and back to tensor
-    times['tensor_2'] = compute_time(A, sigmul_from_tensor, n_rep)
+    # # With sigmul from tensor - convert to list and back to tensor
+    # times['tensor_2'] = compute_time(A, sigmul_from_tensor, n_rep)
 
-    #With sigmul from tensor - convert back to tensor
-    times['tensor_3'] = compute_time(A, lambda x: torch.tensor(compute_sigmul(x)), n_rep)
-
-    #With torch
-    times['torch'] = compute_time(A, sigmul_torch, n_rep)
+    # Torch based version
+    times['sigmul_torch'] = compute_time(A, sigmul_torch, n_rep)
 
     return times
