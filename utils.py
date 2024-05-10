@@ -22,12 +22,12 @@ def sigmul_torch(A):
 def compute_time(A, sigmul_fun, n_rep):
     start = time.time()
     for _ in range(n_rep):
-        B = sigmul_fun(A)
+        _ = sigmul_fun(A)
     return (time.time() - start) / n_rep
 
 
 def compare_times(A, n_rep=50, include_cpp=True, include_conv_cython=False):
-    times = {}    
+    times = {}
 
     if include_cpp:
         # C++ based version
