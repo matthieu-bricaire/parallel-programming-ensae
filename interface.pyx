@@ -33,5 +33,3 @@ cdef float[:, :] sigmul_cython(float[:, :] A):
 
 def compute_sigmul_cython(A):
     return np.asarray(sigmul_cython(A), dtype=np.float32)
-    # cdef float[:, :] mat = np.asarray(A, dtype=np.float32)
-    # return np.asarray(sigmul_cython(mat), dtype=np.float32)
