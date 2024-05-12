@@ -45,7 +45,7 @@ def compare_times(A, n_rep=50,
         times['sigmul_cpp'] = compute_time(Al, compute_sigmul_cpp, n_rep)
 
     if include_conv_cython:
-        times['sigmul_cython_with_conv'] = compute_time(A, sigmul_from_tensor_cython, n_rep)
+        times['sigmul_cython_conversions'] = compute_time(A, sigmul_from_tensor_cython, n_rep)
 
     if include_sequential:
         # Naive version
