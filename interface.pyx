@@ -1,7 +1,9 @@
 from libcpp.vector cimport vector
-import cython
-from cython.parallel import prange
 from libc.math cimport exp
+
+from cython.parallel import prange
+import cython
+
 import numpy as np
 
 ctypedef vector[float] FloatVector
@@ -11,7 +13,7 @@ cdef extern from "sigmul.cpp":
     # Declare the C++ function and types you want to use
     my_matrix sigmul(const my_matrix& A)
 
-def compute_sigmul_cpp(my_matrix A):
+def compute_sigmul_cpp(my_matrix A) -> my_matrix:
     # Call the C++ function using the imported C++ interface
     cdef my_matrix B = sigmul(A)
     return B
@@ -32,4 +34,4 @@ cdef float[:, :] sigmul_cython(float[:, :] A):
     return B
 
 def compute_sigmul_cython(A):
-    return np.asarray(sigmul_cython(A), dtype=np.float32)
+    return sigmul_cython(A)
