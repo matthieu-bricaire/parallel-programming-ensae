@@ -3,9 +3,11 @@ import torch
 import time
 import numpy as np
 
+# Import sigmul functions from the custom extension
 from sigmulib import compute_sigmul_cpp, compute_sigmul_cython
 
 
+# Function to compute sigmul in a sequential way, using NumPy
 def unparallel_sigmul(A):
     B = np.empty_like(A, dtype=np.float32)
     for i in range(A.shape[0]):
@@ -15,18 +17,21 @@ def unparallel_sigmul(A):
     return B
 
 
-def sigmul_from_tensor_cython(A):
-    An = np.asarray(A, dtype=np.float32)
-    B = compute_sigmul_cython(An)
-    return torch.tensor(B)
-
-
+# Reference implementation of sigmul, using PyTorch
 def sigmul_torch(A):
     sigm = F.sigmoid(A)
     res = A * sigm
     return res
 
 
+# Function to compute sigmul with Cython, including the PyTorch -> C++ -> PyTorch type conversions
+def sigmul_from_tensor_cython(A):
+    An = np.asarray(A, dtype=np.float32)
+    B = compute_sigmul_cython(An)
+    return torch.tensor(B)
+
+
+# Function to compute the average execution time of a given function
 def compute_time(A, sigmul_fun, n_rep):
     start = time.time()
     for _ in range(n_rep):
@@ -34,22 +39,24 @@ def compute_time(A, sigmul_fun, n_rep):
     return (time.time() - start) / n_rep
 
 
+# Function to compare the execution times of the different sigmul implementations
 def compare_times(A, n_rep=50,
                   include_cpp=True, include_conv_cython=False, include_sequential=False):
 
     times = {}
 
+    # C++ based version
     if include_cpp:
-        # C++ based version
         Al = A.tolist()
         times['sigmul_cpp'] = compute_time(Al, compute_sigmul_cpp, n_rep)
 
+    # Naive version
+    if include_sequential:
+        times['sigmul_sequential'] = compute_time(A, unparallel_sigmul, n_rep)
+
+    # Full cython version with type conversion
     if include_conv_cython:
         times['sigmul_cython_conversions'] = compute_time(A, sigmul_from_tensor_cython, n_rep)
-
-    if include_sequential:
-        # Naive version
-        times['sigmul_sequential'] = compute_time(A, unparallel_sigmul, n_rep)
 
     # Full cython version
     An = np.asarray(A, dtype=np.float32)

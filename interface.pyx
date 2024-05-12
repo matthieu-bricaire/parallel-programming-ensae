@@ -6,18 +6,24 @@ import cython
 
 import numpy as np
 
+
+# Definition of types corresponding to a 2D float matrix
 ctypedef vector[float] FloatVector
 ctypedef vector[FloatVector] my_matrix
 
+
+# Declaration of the sigmul function from its external source file
 cdef extern from "sigmul.cpp":
-    # Declare the C++ function and types you want to use
     my_matrix sigmul(const my_matrix& A)
 
+
+# Wrapper to expose the C++ version of the sigmul function to Python users
 def compute_sigmul_cpp(my_matrix A) -> my_matrix:
-    # Call the C++ function using the imported C++ interface
     cdef my_matrix B = sigmul(A)
     return B
 
+
+# Cython function to compute the sigmul operation
 @cython.boundscheck(False)
 cdef float[:, :] sigmul_cython(float[:, :] A):
     cdef int rows = A.shape[0]
@@ -33,5 +39,7 @@ cdef float[:, :] sigmul_cython(float[:, :] A):
 
     return B
 
+
+# Wrapper to expose the Cython version of the sigmul function to Python users
 def compute_sigmul_cython(A):
     return sigmul_cython(A)
