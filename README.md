@@ -1,6 +1,6 @@
 ## Programmation parallèle pour le *Machine Learning*
 
-Ce projet a été réalisé dans le cadre du cours "Programmation parallèle pour le *Machine Learning*", dispensé par Xavier Dupré et Matthieu Durut à l'ENSAE Paris. Il porte sur la parallélisation sur CPU d'une séquence d'opérations matricielles extraites d'un modèle Llama. Plus précisément, à partir d'une matrice `A`, il s'agit de paralléliser la séquence d'opérations `sigmoid(A) * A` en C++, et de comparer les performances de cette méthode à son équivalent codé en `torch`. 
+Ce projet a été réalisé dans le cadre du cours "Programmation parallèle pour le *Machine Learning*", dispensé par Xavier Dupré et Matthieu Durut à l'ENSAE Paris. Il porte sur la parallélisation sur CPU d'une séquence d'opérations matricielles extraites d'un modèle Llama. Plus précisément, à partir d'une matrice `A`, il s'agit de paralléliser la séquence d'opérations `sigmoid(A) * A` en C++, et de comparer les performances de cette méthode à son équivalent codé en `torch`.  Les analyses effectuées sont détaillées dans `rapport_sigmul.pdf`.
 
 ## Accès au code
 
@@ -43,5 +43,6 @@ Une fois l'extension construite, elle peut être importée et utilisée en pytho
 ### Analyses
 Ce dépôt contient également les codes associés aux expériences et aux analyses menées:
 
+- `rapport_sigmul.pdf` : détail des analyses effectuées
 - `times_comparisons.ipynb` : comparaison des performances des différentes stratégies
 - `utils.py` : regroupement de fonctions utilisées lors des analyses
