@@ -1,10 +1,18 @@
-import time
-import torch
 import torch.nn.functional as F
-from sigmulib import compute_sigmul_cpp, compute_sigmul_cython
+import torch
+import time
 import numpy as np
 
-torch.manual_seed(29)
+from sigmulib import compute_sigmul_cpp, compute_sigmul_cython
+
+
+def unparallel_sigmul(A):
+    B = np.empty_like(A, dtype=np.float32)
+    for i in range(A.shape[0]):
+        for j in range(A.shape[1]):
+            a = A[i, j]
+            B[i, j] = a / (1 + np.exp(-a))
+    return B
 
 
 def sigmul_from_tensor_cython(A):
@@ -26,7 +34,9 @@ def compute_time(A, sigmul_fun, n_rep):
     return (time.time() - start) / n_rep
 
 
-def compare_times(A, n_rep=50, include_cpp=True, include_conv_cython=False):
+def compare_times(A, n_rep=50,
+                  include_cpp=True, include_conv_cython=False, include_sequential=False):
+
     times = {}
 
     if include_cpp:
@@ -36,6 +46,10 @@ def compare_times(A, n_rep=50, include_cpp=True, include_conv_cython=False):
 
     if include_conv_cython:
         times['sigmul_cython_with_conv'] = compute_time(A, sigmul_from_tensor_cython, n_rep)
+
+    if include_sequential:
+        # Naive version
+        times['sigmul_sequential'] = compute_time(A, unparallel_sigmul, n_rep)
 
     # Full cython version
     An = np.asarray(A, dtype=np.float32)
