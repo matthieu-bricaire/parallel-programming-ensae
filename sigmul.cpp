@@ -19,8 +19,7 @@ my_matrix sigmul(const my_matrix& A) {
     for (int i = 0; i < numRows; i++) {
         for (int j = 0; j < numCols; j++) {
             float a = A[i][j];
-            float result = a / (1 + exp(-a));
-            B[i][j] = result;
+            B[i][j] = a / (1 + exp(-a));
         }
     }
 
